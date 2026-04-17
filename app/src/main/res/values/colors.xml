@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="black">#191919</color>
+    <color name="black_light">#575757</color>
+    <color name="white">#FFFFFFFF</color>
+    <color name="blue">#0095FF</color>
+    <color name="blue_light">#38ACFF</color>
+
+    <color name="orange">#FF9800</color>
+    <color name="orange_dark">#FF7700</color>
+    <color name="green">#4CAF50</color>
+    <color name="green_dark">#388E3C</color>
+
+    <color name="grey">#BABECC</color>
+    <color name="grey_light">#D7DAE5</color>
+    <color name="grey_light_2">#F0F0F0</color>
+
+    <color name="red">#CC446F</color>
+    <color name="red_dark">#A9204C</color>
+    <color name="transparent">@android:color/transparent</color>
+
+    <!-- Основные цвета -->
+    <color name="primary">@color/blue</color>
+    <color name="onPrimary">@color/blue_light</color>
+    <color name="secondary">@color/black</color>
+    <color name="onSecondary">@color/black_light</color>
+<!--    <color name="tertiary">@color/blue</color>-->
+<!--    <color name="onTertiary">@color/blue_light</color>-->
+
+    <!-- Системные цвета -->
+    <color name="background">@color/white</color>
+    <color name="surface">@color/white</color>
+
+    <color name="success">@color/green</color>
+    <color name="onSuccess">@color/green_dark</color>
+    <color name="warning">@color/orange</color>
+    <color name="onWarning">@color/orange_dark</color>
+    <color name="error">@color/red</color>
+    <color name="onError">@color/red_dark</color>
+    <color name="outline">@color/grey_light</color>
+    <color name="divider">@color/grey_light_2</color>
+    <color name="disabled">@color/grey</color>
+
+    <!-- Текст-->
+    <color name="text_primary">@color/primary</color>
+    <color name="text_dark">@color/black</color>
+    <color name="text_light">@color/white</color>
+
+    <!-- Кнопки -->
+    <color name="button_primary_default">@color/primary</color>
+    <color name="button_primary_pressed">@color/onPrimary</color>
+    <color name="button_primary_disabled">@color/disabled</color>
+    <color name="button_primary_text">@color/text_light</color>
+
+    <color name="button_secondary_default">@color/transparent</color>
+    <color name="button_secondary_pressed">@color/transparent</color>
+    <color name="button_secondary_disabled">@color/transparent</color>
+    <color name="button_secondary_border">@color/outline</color>
+    <color name="button_secondary_text">@color/text_dark</color>
+
+    <!-- Поле ввода -->
+    <color name="focusedTextColor">@color/text_dark</color>
+    <color name="focusedLabelColor">@color/outline</color>
+    <color name="focusedIndicatorColor">@color/text_dark</color>
+
+    <color name="unfocusedTextColor">@color/outline</color>
+    <color name="unfocusedLabelColor">@color/text_dark</color>
+    <color name="unfocusedIndicatorColor">@color/outline</color>
+
+    <color name="disabledIndicatorColor">@color/text_dark</color>
+    <color name="errorIndicatorColor">@color/outline</color>
+    <color name="cursorColor">@color/text_dark</color>
+</resources>

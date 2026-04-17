@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Заголовки -->
+    <dimen name="text_size_header_large">32sp</dimen>
+    <dimen name="text_size_header_medium">28sp</dimen>
+    <dimen name="text_size_header_small">24sp</dimen>
+
+    <!-- Основной текст -->
+    <dimen name="text_size_body_large">18sp</dimen>
+    <dimen name="text_size_body_medium">16sp</dimen>
+    <dimen name="text_size_body_small">14sp</dimen>
+
+    <!-- Подписи -->
+    <dimen name="text_size_caption_large">14sp</dimen>
+    <dimen name="text_size_caption_medium">12sp</dimen>
+    <dimen name="text_size_caption_small">10sp</dimen>
+
+
+    <dimen name="padding_body">16dp</dimen>
+    <dimen name="padding_small">8dp</dimen>
+    <dimen name="padding_medium">16dp</dimen>
+
+    <dimen name="icon_size_small">16dp</dimen>
+    <dimen name="icon_size_medium">18dp</dimen>
+    <dimen name="icon_size_large">20dp</dimen>
+    <dimen name="icon_size_large_super">24dp</dimen>
+
+    <dimen name="indent_small">4dp</dimen>
+    <dimen name="indent_small_super">8dp</dimen>
+    <dimen name="indent_medium">12dp</dimen>
+    <dimen name="indent_medium_super">20dp</dimen>
+    <dimen name="indent_large">30dp</dimen>
+    <dimen name="indent_text">5dp</dimen>
+</resources>

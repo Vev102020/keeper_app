@@ -1,0 +1,64 @@
+<resources>
+    <string name="app_name">keeper_app</string>
+
+    <string name="placeholder_email">Email</string>
+    <string name="placeholder_password">Пароль</string>
+    <string name="placeholder_confirm_password">Повторите пароль</string>
+    <!-- DrawerMenu -->
+    <string name="drawer_settings">Аккаунт</string>
+    <string name="drawer_about">О приложении</string>
+    <!-- AppBar -->
+    <string name="appBar_descMenu">Открыть меню</string>
+
+    <!-- Auth -->
+    <string name="login_title">Вход</string>
+    <string name="register_title">Регистрация</string>
+    <string name="forgot_title">Восстановление пароля</string>
+
+    <string name="login_btn">Войти</string>
+    <string name="register_btn">Зарегистрироваться</string>
+    <string name="remember_btn">Забыли пароль?</string>
+    <string name="forgot_btn">Отправить</string>
+
+    <string name="register_link_page">Зарегистрироваться</string>
+    <string name="register_link_desc">Нет аккаунта?</string>
+    <string name="login_link_page">Войти</string>
+    <string name="login_link_desc">Есть аккаунт?</string>
+    <string name="forgot_link_page">Авторизации</string>
+    <string name="forgot_link_desc">Вернуться к</string>
+
+    <string name="email_hint">Email</string>
+    <string name="password_hint">Пароль</string>
+    <string name="show_password">Показать пароль</string>
+    <string name="hide_password">Скрыть пароль</string>
+    <string name="error_mess">Неверный email или пароль</string>
+
+    <!-- Service -->
+    <string name="service_title">Создать сервис</string>
+    <string name="service_title_back">Назад</string>
+    <string name="service_empty">Нет сохранённых сервисов</string>
+    <string name="service_start_empty">Загрузка данных</string>
+    <string name="service_error_load">Не удалось загрузить данные</string>
+    <string name="service_field_title_add">Название</string>
+    <string name="service_field_title_key">Ключ</string>
+    <string name="service_scan_btn">Сканировать QR-код</string>
+    <string name="service_save_btn">Создать</string>
+    <string name="service_text_or">ИЛИ</string>
+    <string name="service_editor_desc">Сохраните секретный ключ на бумажном носителе! Если данные или устройство будут утеряны, восстановить их не получится. Однако с сохранённым ключом вы сможете сгенерировать новый TOTP‑код.</string>
+
+
+    <!--Settings-->
+    <string name="settings_title">Настройки аккаунта</string>
+    <string name="settings_change_pin_bth">Сменить Пин-код</string>
+    <string name="settings_change_password_bth">Сменить пароль</string>
+    <string name="settings_logout_bth">Выйти из аккаунта</string>
+    <string name="settings_del_bth">Удалить аккаунт</string>
+
+    <!--About-->
+    <string name="about_desc">Это приложение для управления сервисами и генерации TOTP-кодов на локальном хранилище.</string>
+    <string name="about_version_title">Версия</string>
+    <string name="about_developer_title">Разработчик</string>
+    <string name="about_developer_value">VenDarkCom</string>
+    <string name="about_email_title">Email для связи</string>
+    <string name="about_email_value">ven101venom@gmail.com</string>
+</resources>
