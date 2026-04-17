@@ -123,12 +123,7 @@ dependencies {
     implementation(libs.lifecycle.runtime.ktx)
     implementation(libs.lifecycle.viewmodel.ktx)
     implementation(libs.lifecycle.viewmodel.compose)
-    //mlkit
-//    implementation(libs.google.mlkit)
-    implementation(libs.accompanist.permissions)
-//    implementation(libs.camera.core)
-//    implementation(libs.camera.camera2)
-//    implementation(libs.camera.lifecycle)
-//    implementation(libs.camera.view)
+    //zxing
+    implementation(libs.zxing.android.embedded)
 }
 

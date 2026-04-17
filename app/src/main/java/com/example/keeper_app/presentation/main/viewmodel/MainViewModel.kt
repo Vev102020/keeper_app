@@ -3,16 +3,20 @@ package com.example.keeper_app.presentation.main.viewmodel
 import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.keeper_app.AppViewModel
 import com.example.keeper_app.data.network.repo.AuthRepository
 import com.example.keeper_app.data.network.session.SessionManager
 import com.example.keeper_app.data.storage.dao.ServiceDao
 import com.example.keeper_app.data.storage.entities.ServiceDb
 import com.example.keeper_app.data.storage.entities.Totp
 import com.example.keeper_app.presentation.auth.viewmodel.AuthState
+import com.example.keeper_app.presentation.main.ui.screen.parseOtpAuth
+import com.journeyapps.barcodescanner.ScanIntentResult
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.map
@@ -35,6 +39,10 @@ data class AddServiceState(
     val success: Boolean = false
 )
 
+sealed class NavigationEvent{
+    object NavigateBack: NavigationEvent()
+}
+
 @HiltViewModel
 class MainViewModel @Inject constructor(
     private val serviceDao: ServiceDao,
@@ -51,6 +59,15 @@ class MainViewModel @Inject constructor(
 
     private val _addServiceState = MutableStateFlow(AddServiceState())
     val addServiceState = _addServiceState.asStateFlow()
+
+    private val _scanIntent = MutableSharedFlow<Unit>(
+        replay = 1,
+        extraBufferCapacity = 1
+    )
+    val scanIntent : SharedFlow<Unit> = _scanIntent.asSharedFlow()
+
+    private val _navigationEvent = MutableSharedFlow<NavigationEvent>()
+    val navigationEvent: SharedFlow<NavigationEvent> = _navigationEvent.asSharedFlow()
 
 
     init {
@@ -69,15 +86,13 @@ class MainViewModel @Inject constructor(
                        MainState.Success(services)
                     }
                     .catch { exception ->
-                        Log.e(TAG, "Ошибка загрузки сервисов", exception)
-                        _mainState.value = MainState.Error(exception.message ?: "Ошибка загрузки")
+                      _mainState.value = MainState.Error(exception.message ?: "Ошибка загрузки")
                     }
                     .collect { state ->
                         _mainState.value = state
                     }
             }catch (e: Exception){
-                Log.e(TAG, "Ошибка в loadServices", e)
-                authRepository.setAuthState(AuthState.Idle)
+                                authRepository.setAuthState(AuthState.Idle)
                 _mainState.value = MainState.Error("Пользователь не авторизирован")
             }
 
@@ -92,6 +107,29 @@ class MainViewModel @Inject constructor(
     }
     fun clearAddServiceForm() {
         _addServiceState.value = AddServiceState()
+    }
+
+    fun startScan() {
+        viewModelScope.launch {
+            _scanIntent.emit(Unit)
+        }
+    }
+
+    fun handleScanResult(result: ScanIntentResult) {
+        if(result.contents != null){
+            val content = result.contents
+            val otpData = parseOtpAuth(content)
+            val secret = otpData?.secret ?: content.uppercase()
+            updateSecretKey(secret)
+
+            val currentName = addServiceState.value.serviceName
+            if (currentName.isBlank() && otpData?.issuer != null) {
+                updateServiceName(otpData.issuer)
+            }
+
+        }else{
+            Log.i(TAG, "Отмена сканирования")
+        }
     }
 
     fun addService(){
@@ -117,13 +155,6 @@ class MainViewModel @Inject constructor(
                     return@launch
                 }
 
-                if (!isValidBase32(secretKey)) {
-                    _addServiceState.update {
-                        it.copy(isLoading = false, errorMessage = "Некорректный формат ключа (Base32)")
-                    }
-                    return@launch
-                }
-
                 val totp = Totp(secretKey = secretKey)
                 val service = ServiceDb(
                     id = 0,
@@ -137,6 +168,8 @@ class MainViewModel @Inject constructor(
                 _addServiceState.update {
                     it.copy(isLoading = false, success = true)
                 }
+
+                _navigationEvent.emit(NavigationEvent.NavigateBack)
 
                 clearAddServiceForm()
             } catch (e: Exception){

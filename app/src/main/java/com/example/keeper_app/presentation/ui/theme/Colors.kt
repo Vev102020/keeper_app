@@ -76,7 +76,7 @@ object ThemeColors{
      inversePrimary = Blue,
      surfaceTint = LightBlue,
      outlineVariant = Color(0xFF808C85),
-     scrim = Color(0x80191919),
+     scrim = Color(0x33000000),
     )
     val dark = CustomThemeColors(
         primary = Blue,
@@ -107,7 +107,7 @@ object ThemeColors{
         inversePrimary = Blue,
         surfaceTint = LightBlue,
         outlineVariant = Color(0xFF808C85),
-        scrim = Color(0x80191919),
+        scrim = Color(0x33000000),
     )
 }
 

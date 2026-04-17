@@ -41,7 +41,6 @@ fun MainNavigate(){
         }
         composable (MainNav.AddService.route) {
             AddServiceScreen(
-                onServiceAdded = { navController.popBackStack() },
                 onBack = { navController.popBackStack() },
             )
         }

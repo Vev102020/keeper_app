@@ -1,9 +1,8 @@
 package com.example.keeper_app.presentation.main.ui.screen
 
-import android.app.Activity
-import android.content.Intent
-import android.net.Uri
-import android.net.Uri.*
+import android.Manifest
+import android.content.pm.PackageManager
+import android.util.Log
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.layout.Column
@@ -20,6 +19,9 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
@@ -27,9 +29,11 @@ import com.example.keeper_app.R
 import com.example.keeper_app.presentation.ui.theme.custom.CustomAppBar
 import com.example.keeper_app.presentation.ui.theme.custom.CustomStatusBar
 import androidx.compose.ui.Alignment
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
+import androidx.core.content.ContextCompat
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.example.keeper_app.presentation.main.viewmodel.AddServiceState
 import com.example.keeper_app.presentation.main.viewmodel.MainViewModel
@@ -39,6 +43,11 @@ import com.example.keeper_app.presentation.ui.theme.custom.ButtonStyle
 import com.example.keeper_app.presentation.ui.theme.custom.CustomButton
 import com.example.keeper_app.presentation.ui.theme.custom.CustomLoadingButton
 import com.example.keeper_app.presentation.ui.theme.custom.CustomTextField
+import androidx.core.net.toUri
+import com.example.keeper_app.presentation.main.ui.components.requestCameraPermission
+import com.example.keeper_app.presentation.main.viewmodel.NavigationEvent
+import com.journeyapps.barcodescanner.ScanContract
+import com.journeyapps.barcodescanner.ScanOptions
 
 data class OtpAuthData(
     val secret: String,
@@ -47,7 +56,7 @@ data class OtpAuthData(
 
 fun parseOtpAuth(uri: String): OtpAuthData? {
     if (!uri.startsWith("otpauth://")) return null
-    val uriParsed = parse(uri)
+    val uriParsed = uri.toUri()
     val secret = uriParsed.getQueryParameter("secret")?.uppercase()
     val issuer = uriParsed.getQueryParameter("issuer")
         ?: uriParsed.getQueryParameter("label")?.split(":")?.get(0)
@@ -56,11 +65,9 @@ fun parseOtpAuth(uri: String): OtpAuthData? {
 
 @Composable
 fun AddServiceScreen(
-    onServiceAdded: () -> Unit,
     onBack: () -> Unit
 ){
     AddServiceContent(
-        onServiceAdded = onServiceAdded,
         onBack = onBack,
     )
 }
@@ -70,40 +77,60 @@ private fun AddServiceContent(
     viewModel: MainViewModel = hiltViewModel(),
     title: String = stringResource(R.string.service_title),
     backTitle: String = stringResource(R.string.service_title_back),
-    onServiceAdded: () -> Unit,
-    onBack: () -> Unit
+    onBack: () -> Unit,
 ){
+    val context = LocalContext.current
     val state by viewModel.addServiceState.collectAsState()
     val errorMessage = state.errorMessage
 
-    LaunchedEffect(state.success) {
-        if (state.success) {
-            onServiceAdded()
+    var hasPermission by remember { mutableStateOf(false) }
+    val cameraPermissionLauncher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.RequestPermission(),
+        onResult = { isGranted ->
+            hasPermission = isGranted
         }
+    )
+
+    val scanLauncher = rememberLauncherForActivityResult(
+        contract = ScanContract(),
+        onResult = { result ->
+            viewModel.handleScanResult(result)
+        }
+    )
+
+    //  Проверяем текущее состояние разрешения при старте
+    LaunchedEffect(Unit) {
+        val granted = ContextCompat.checkSelfPermission(
+            context,
+            Manifest.permission.CAMERA
+        ) == PackageManager.PERMISSION_GRANTED
+        hasPermission = granted
     }
 
-    val openQRScanner = rememberLauncherForActivityResult(
-        contract = ActivityResultContracts.StartActivityForResult()
-    ) { result ->
-        if (result.resultCode == Activity.RESULT_OK) {
-            val scannedText = result.data?.getStringExtra("SCAN_RESULT")
-            if (!scannedText.isNullOrBlank()) {
-                // Парсим TOTP, если это otpauth://
-                val otpData = parseOtpAuth(scannedText)
-                val secret = otpData?.secret ?: scannedText.uppercase()
-
-                viewModel.updateSecretKey(secret)
-                if (state.serviceName.isBlank() && otpData?.issuer != null) {
-                    viewModel.updateServiceName(otpData.issuer)
+    //  Слушаем команду на сканирование
+    LaunchedEffect(viewModel) {
+        viewModel.scanIntent.collect {
+            // Проверяем разрешение
+            if (hasPermission) {
+                val options = ScanOptions().apply {
+                    setDesiredBarcodeFormats(ScanOptions.QR_CODE)
+                    setPrompt("Наведите камеру на QR-код")
+                    setBeepEnabled(false)
+                    setBarcodeImageEnabled(true)
                 }
+                scanLauncher.launch(options)
+            } else {
+                // Запрашиваем разрешение
+                cameraPermissionLauncher.launch(Manifest.permission.CAMERA)
             }
         }
     }
 
-    fun onOpenScanner(){
-        val intent = Intent("com.google.zxing.client.android.SCAN")
-        intent.putExtra("SCAN_MODE", "QR_CODE_MODE")
-        openQRScanner.launch(intent)
+    // Слушаем навигацию
+    LaunchedEffect(viewModel) {
+        viewModel.navigationEvent.collect {
+            onBack()
+        }
     }
 
     FormContent(
@@ -113,7 +140,7 @@ private fun AddServiceContent(
         onBack = onBack,
         updateServiceName = { viewModel.updateServiceName(it) },
         updateSecretKey = { viewModel.updateSecretKey(it)},
-        onOpenScanner = { onOpenScanner() },
+        onOpenScanner = { viewModel.startScan() },
         errorMessage = errorMessage,
         addService = {viewModel.addService()}
     )

@@ -1,11 +1,13 @@
 package com.example.keeper_app.presentation.main.ui.screen
 
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.asPaddingValues
@@ -31,6 +33,7 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.ListItem
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.MenuDefaults
 import androidx.compose.material3.ModalDrawerSheet
 import androidx.compose.material3.ModalNavigationDrawer
 import androidx.compose.material3.NavigationDrawerItem
@@ -54,6 +57,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.DpOffset
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.example.keeper_app.R
@@ -66,6 +70,7 @@ import com.example.keeper_app.presentation.main.viewmodel.MainState
 import com.example.keeper_app.presentation.main.viewmodel.MainViewModel
 import com.example.keeper_app.presentation.ui.theme.AppTheme
 import com.example.keeper_app.presentation.ui.theme.LocalColors
+import com.example.keeper_app.presentation.ui.theme.Red
 import com.example.keeper_app.presentation.ui.theme.custom.CustomStatusBar
 import kotlinx.coroutines.launch
 
@@ -295,35 +300,52 @@ private fun HomeContent(
                                     )
                                 },
                                 trailingContent = {
-                                    Icon(
-                                        painter = painterResource(R.drawable.ic_more_vert),
-                                        modifier = Modifier.size(dimensionResource(R.dimen.icon_size_medium)),
-                                        contentDescription = ""
-                                    )
+                                    Box {
+                                        Icon(
+                                            painter = painterResource(R.drawable.ic_more_vert),
+                                            contentDescription = "",
+                                            modifier = Modifier
+                                                .size(dimensionResource(R.dimen.icon_size_medium))
+                                                .clickable{expanded = !expanded},
+                                        )
 
-                                    DropdownMenu(
-                                        expanded =  expanded,
-                                        onDismissRequest = {expanded = false}
-                                    ) {
-                                        DropdownMenuItem(
-                                            text = {
-                                                Text("Переименовать")
-                                            },
-                                            onClick = {
-                                                expanded = false
-                                                onMoreClick(service)
-                                            }
-                                        )
-                                        DropdownMenuItem(
-                                            text = {
-                                                Text("Удалить")
-                                            },
-                                            onClick = {
-                                                expanded = false
-                                                onMoreClick(service)
-                                            }
-                                        )
+                                        DropdownMenu(
+                                            expanded = expanded,
+                                            onDismissRequest = { expanded = false },
+                                            shape = MaterialTheme.shapes.medium,
+                                            containerColor = MaterialTheme.colorScheme.surface,
+                                            tonalElevation = 0.dp,
+                                        ) {
+                                            DropdownMenuItem(
+                                                text = {
+                                                    Text("Переименовать")
+                                                },
+                                                onClick = {
+                                                    expanded = false
+                                                    onMoreClick(service)
+                                                },
+                                                modifier = Modifier.height(44.dp),
+                                                contentPadding = PaddingValues(vertical = 0.dp, horizontal = dimensionResource(R.dimen.padding_more_menu))
+                                            )
+                                            Spacer(modifier = Modifier
+                                                .fillMaxWidth()
+                                                .height(1.dp)
+                                                .background(MaterialTheme.colorScheme.outline)
+                                            )
+                                            DropdownMenuItem(
+                                                text = {
+                                                    Text("Удалить")
+                                                },
+                                                onClick = {
+                                                    expanded = false
+                                                    onMoreClick(service)
+                                                },
+                                                modifier = Modifier.height(44.dp),
+                                                contentPadding = PaddingValues(vertical = 0.dp, horizontal = dimensionResource(R.dimen.padding_more_menu))
+                                            )
+                                        }
                                     }
+
                                 },
                                 modifier = Modifier
                                     .fillMaxWidth()
