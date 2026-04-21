@@ -46,6 +46,25 @@
     <string name="service_text_or">ИЛИ</string>
     <string name="service_editor_desc">Сохраните секретный ключ на бумажном носителе! Если данные или устройство будут утеряны, восстановить их не получится. Однако с сохранённым ключом вы сможете сгенерировать новый TOTP‑код.</string>
 
+    <!-- Dialog -->
+    <string name="rename_dialog_title">Переименовать сервис</string>
+    <string name="rename_dialog_input_label">Новое название</string>
+    <string name="rename_dialog_confirm">Сохранить</string>
+    <string name="rename_dialog_dismiss">Отмена</string>
+
+    <string name="delete_dialog_title">Удалить</string>
+    <string name="delete_dialog_text">Данные будут навсегда удалены</string>
+    <string name="delete_dialog_confirm">Удалить</string>
+    <string name="delete_dialog_dismiss">Отмена</string>
+
+    <string name="detail_dialog_title">Totp</string>
+    <string name="detail_dialog_name">Название</string>
+    <string name="detail_dialog_key">000000</string>
+    <string name="detail_dialog_copy">Копировать</string>
+    <string name="detail_dialog_timer">0</string>
+    <string name="detail_dialog_dismiss">Закрыть</string>
+
+
 
     <!--Settings-->
     <string name="settings_title">Настройки аккаунта</string>

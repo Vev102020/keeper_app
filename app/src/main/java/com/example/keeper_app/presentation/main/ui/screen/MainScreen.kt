@@ -1,6 +1,5 @@
 package com.example.keeper_app.presentation.main.ui.screen
 
-import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -33,7 +32,6 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.ListItem
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.MenuDefaults
 import androidx.compose.material3.ModalDrawerSheet
 import androidx.compose.material3.ModalNavigationDrawer
 import androidx.compose.material3.NavigationDrawerItem
@@ -57,12 +55,13 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.unit.DpOffset
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.keeper_app.R
 import com.example.keeper_app.data.storage.entities.ServiceDb
 import com.example.keeper_app.data.storage.entities.Totp
+import com.example.keeper_app.presentation.main.state.UiDialog
 import com.example.keeper_app.presentation.main.ui.components.DeleteServiceDialog
 import com.example.keeper_app.presentation.main.ui.components.DetailServiceDialog
 import com.example.keeper_app.presentation.main.ui.components.RenameServiceDialog
@@ -70,7 +69,6 @@ import com.example.keeper_app.presentation.main.viewmodel.MainState
 import com.example.keeper_app.presentation.main.viewmodel.MainViewModel
 import com.example.keeper_app.presentation.ui.theme.AppTheme
 import com.example.keeper_app.presentation.ui.theme.LocalColors
-import com.example.keeper_app.presentation.ui.theme.Red
 import com.example.keeper_app.presentation.ui.theme.custom.CustomStatusBar
 import kotlinx.coroutines.launch
 
@@ -83,12 +81,32 @@ fun MainScreen(
 
     val viewModel: MainViewModel = hiltViewModel()
     val uiState by viewModel.mainState.collectAsState()
+    val uiDialog by viewModel.uiDialog.collectAsState()
 
     MainContent(
         uiState = uiState,
+        uiDialog = uiDialog,
         onSettingsClick = onSettingsClick,
         onAboutClick = onAboutClick,
         onNavigateToAddService = onNavigateToAddService,
+        onRenameService = { newName ->
+            viewModel.renameService(newName)
+        },
+        onDeleteService = {
+            viewModel.deleteService()
+        },
+        onDismissDialog = {
+            viewModel.hideDialog()
+        },
+        onShowRenameDialog = { service ->
+            viewModel.showRenameDialog(service)
+        },
+        onShowDeleteDialog = { service ->
+            viewModel.showDeleteDialog(service)
+        },
+        onShowDetailDialog = { service ->
+            viewModel.showDetailDialog(service)
+        },
     )
 }
 
@@ -96,57 +114,46 @@ fun MainScreen(
 @Composable
 private fun MainContent(
     uiState: MainState,
+    uiDialog: UiDialog,
     onNavigateToAddService: () -> Unit,
     onSettingsClick: () -> Unit,
     onAboutClick: () -> Unit,
+    onRenameService: (String) -> Unit,
+    onDeleteService: () -> Unit,
+    onDismissDialog: () -> Unit,
+    onShowRenameDialog: (ServiceDb) -> Unit,
+    onShowDeleteDialog: (ServiceDb) -> Unit,
+    onShowDetailDialog: (ServiceDb) -> Unit,
 ){
-    val drawerState = rememberDrawerState(DrawerValue.Closed)
     val scope = rememberCoroutineScope()
+    val drawerState = rememberDrawerState(DrawerValue.Closed)
 
-    var showRenameDialog by remember { mutableStateOf(false) }
-    var showDeleteDialog by remember { mutableStateOf(false) }
-    var showDetailServiceDialog by remember { mutableStateOf(false) }
-    var selectedService by remember { mutableStateOf<ServiceDb?>(null) }
-
-    if (showDetailServiceDialog && selectedService != null){
-        DetailServiceDialog(
-            service = selectedService,
-            onDismiss = {
-                showDetailServiceDialog = false
-                selectedService = null
-            }
-        )
+    when(val dialog = uiDialog){
+        is UiDialog.Rename -> {
+            RenameServiceDialog(
+                service = dialog.service,
+                message = dialog.message.takeIf { it.isNotBlank() },
+                onConfirm = onRenameService,
+                onDismiss = onDismissDialog,
+            )
+        }
+        is UiDialog.Delete -> {
+            DeleteServiceDialog(
+                service = dialog.service,
+                onConfirm = onDeleteService,
+                onDismiss = onDismissDialog,
+            )
+        }
+        is UiDialog.Detail -> {
+            DetailServiceDialog(
+                service = dialog.service,
+                onDismiss = onDismissDialog,
+            )
+        }
+        //Ничего не выводим
+        UiDialog.Idle -> Unit
     }
 
-    if(showRenameDialog && selectedService != null){
-        RenameServiceDialog(
-            service = selectedService,
-            onConfirm = {
-                //функция переименовки
-                showRenameDialog = false
-                selectedService = null
-            },
-            onDismiss = {
-                showRenameDialog = false
-                selectedService = null
-            }
-        )
-    }
-
-    if(showDeleteDialog && selectedService != null){
-        DeleteServiceDialog(
-            service = selectedService,
-            onConfirm = {
-                //функция удаления
-                showRenameDialog = false
-                selectedService = null
-            },
-            onDismiss = {
-                showRenameDialog = false
-                selectedService = null
-            }
-        )
-    }
     CustomStatusBar()
     ModalNavigationDrawer(
         drawerState = drawerState,
@@ -217,13 +224,9 @@ private fun MainContent(
                 ) {
                     HomeContent(
                         uiState = uiState,
-                        onDetailClick = { service ->
-                            selectedService = service
-                            showDetailServiceDialog = true
-                        },
-                        onMoreClick = { service ->
-                            selectedService = service
-                        }
+                        onDetailClick = onShowDetailDialog,
+                        onDeleteDialog = onShowDeleteDialog,
+                        onRenameService = onShowRenameDialog
                     )
                 }
             }
@@ -235,7 +238,8 @@ private fun MainContent(
 private fun HomeContent(
     uiState: MainState,
     onDetailClick: (ServiceDb) -> Unit,
-    onMoreClick: (ServiceDb) -> Unit
+    onRenameService: (ServiceDb) -> Unit,
+    onDeleteDialog: (ServiceDb) -> Unit,
 ){
     Box(
         modifier = Modifier
@@ -322,7 +326,7 @@ private fun HomeContent(
                                                 },
                                                 onClick = {
                                                     expanded = false
-                                                    onMoreClick(service)
+                                                    onRenameService(service)
                                                 },
                                                 modifier = Modifier.height(44.dp),
                                                 contentPadding = PaddingValues(vertical = 0.dp, horizontal = dimensionResource(R.dimen.padding_more_menu))
@@ -338,7 +342,7 @@ private fun HomeContent(
                                                 },
                                                 onClick = {
                                                     expanded = false
-                                                    onMoreClick(service)
+                                                    onDeleteDialog(service)
                                                 },
                                                 modifier = Modifier.height(44.dp),
                                                 contentPadding = PaddingValues(vertical = 0.dp, horizontal = dimensionResource(R.dimen.padding_more_menu))
@@ -489,15 +493,21 @@ private fun MainContentPreview(){
         ),
     )
 
-    // Создаём нужное состояние
     val previewUiState = MainState.Success(previewServices)
 
     AppTheme {
         MainContent(
             uiState = previewUiState,
+            uiDialog = UiDialog.Idle,
             onSettingsClick = {},
             onAboutClick = {},
             onNavigateToAddService = {},
+            onRenameService = {service -> },
+            onDeleteService = {},
+            onDismissDialog = {},
+            onShowRenameDialog= {service -> },
+            onShowDeleteDialog= {service -> },
+            onShowDetailDialog= {service -> },
         )
     }
 }

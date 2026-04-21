@@ -1,6 +1,7 @@
 package com.example.keeper_app.presentation.main.viewmodel
 
 import android.util.Log
+import androidx.compose.runtime.MutableState
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.keeper_app.data.network.repo.AuthRepository
@@ -9,6 +10,7 @@ import com.example.keeper_app.data.storage.dao.ServiceDao
 import com.example.keeper_app.data.storage.entities.ServiceDb
 import com.example.keeper_app.data.storage.entities.Totp
 import com.example.keeper_app.presentation.auth.viewmodel.AuthState
+import com.example.keeper_app.presentation.main.state.UiDialog
 import com.example.keeper_app.presentation.main.ui.screen.parseOtpAuth
 import com.journeyapps.barcodescanner.ScanIntentResult
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -69,11 +71,15 @@ class MainViewModel @Inject constructor(
     private val _navigationEvent = MutableSharedFlow<NavigationEvent>()
     val navigationEvent: SharedFlow<NavigationEvent> = _navigationEvent.asSharedFlow()
 
+    private val _uiDialog = MutableStateFlow<UiDialog>(UiDialog.Idle)
+    val uiDialog : StateFlow<UiDialog> = _uiDialog.asStateFlow()
+
 
     init {
         loadServices()
     }
 
+    //Изменяем состояния полей
     private fun loadServices(){
         viewModelScope.launch {
             _mainState.value = MainState.Loading
@@ -109,6 +115,7 @@ class MainViewModel @Inject constructor(
         _addServiceState.value = AddServiceState()
     }
 
+    //Работа сканера через камеру
     fun startScan() {
         viewModelScope.launch {
             _scanIntent.emit(Unit)
@@ -132,6 +139,21 @@ class MainViewModel @Inject constructor(
         }
     }
 
+
+    //Диалоги
+    fun showRenameDialog(service: ServiceDb){
+        _uiDialog.value = UiDialog.Rename(service)
+    }
+    fun showDetailDialog(service: ServiceDb){
+        _uiDialog.value = UiDialog.Detail(service)
+    }
+    fun showDeleteDialog(service: ServiceDb){
+        _uiDialog.value = UiDialog.Delete(service)
+    }
+    fun hideDialog(){
+        _uiDialog.value = UiDialog.Idle
+    }
+    //Операции с диалогами
     fun addService(){
         viewModelScope.launch {
             _addServiceState.update { it.copy(isLoading = true, errorMessage = null) }
@@ -185,9 +207,61 @@ class MainViewModel @Inject constructor(
 
     }
 
-    private fun isValidBase32(secret: String): Boolean {
-        if (!"^[A-Z2-7]+=*$".toRegex().matches(secret)) return false
-        // Длина должна быть кратна 8
-        return secret.length % 8 == 0
+    fun renameService(newName: String){
+        viewModelScope.launch {
+            val dialog = _uiDialog.value
+            if(dialog !is UiDialog.Rename) return@launch
+
+            try {
+                // если не пустое
+                if(newName.isBlank()){
+                    _uiDialog.value = dialog.copy(message = "Название сервиса не может быть пустым")
+                    return@launch
+                }
+
+                // если отличается от текущего
+                if(newName == dialog.service.name){
+                    _uiDialog.value = dialog.copy(message = "Новое название сервиса должно отличаться от текущего")
+                    return@launch
+                }
+
+                // проверка уникальности имени
+                val services = when(val state = _mainState.value){
+                    is MainState.Success -> state.service
+                    else -> emptyList()
+                }
+
+
+                if (services.any{it.name == newName && it.id != dialog.service.id}){
+                    _uiDialog.value = dialog.copy(message = "Сервис с таким именем существует")
+                    return@launch
+                }
+
+                val newServices = dialog.service.copy(name = newName)
+
+                serviceDao.updateService(newServices)
+                hideDialog()
+                Log.i(TAG, "Сервис переименован")
+            }catch (e: Exception){
+                Log.e(TAG, "Не удалось переименовать сервис. Ошибка: ${e.message}")
+                _uiDialog.value = dialog.copy(message =  "Не удалось переименовать сервис")
+            }
+        }
     }
+
+    fun deleteService(){
+        viewModelScope.launch {
+            val dialog = _uiDialog.value
+            if (dialog !is UiDialog.Delete) return@launch
+
+            serviceDao.deleteService(dialog.service)
+            _mainState.value = when(val state = _mainState.value){
+                is MainState.Success -> MainState.Success(state.service.filter { it.id != dialog.service.id })
+                else -> state
+            }
+
+            hideDialog()
+        }
+    }
+
 }

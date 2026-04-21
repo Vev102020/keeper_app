@@ -3,6 +3,7 @@ package com.example.keeper_app.presentation.ui.theme
 import androidx.compose.runtime.staticCompositionLocalOf
 import androidx.compose.ui.graphics.Color
 import com.example.keeper_app.presentation.ui.theme.CustomButtonColors
+import com.example.keeper_app.presentation.ui.theme.custom.CustomAlertDialog
 
 val White = Color(0xFFFFFFFF)
 val Black = Color(0xFF191919)
@@ -128,6 +129,7 @@ data class LocalColors(
     val textField: CustomTextFieldColors,
     val appBar: CustomAppBarColors,
     val drawer: CustomDrawerColors,
+    val dialog: CustomDialogColors,
 )
 
 data class CustomAppBarColors(
@@ -150,6 +152,18 @@ data class CustomDrawerColors(
     val  selectedBadgeColor: Color,
     val  unselectedBadgeColor: Color
 )
+
+data class CustomDialogColors(
+    val background: Color,
+    val title: Color,
+    val text: Color,
+    val confirm: Color,
+    val dismiss: Color,
+    val shape: Color,
+    val shadow: Color,
+    val message: Color,
+)
+
 
 //Кнопки
 data class CustomButtonColors(
@@ -285,13 +299,27 @@ object LightColors{
         selectedBadgeColor= ThemeColors.light.primary,
         unselectedBadgeColor= Black,
     )
+
+    val dialog = CustomDialogColors(
+        background = LightColorScheme.surface,
+        title = Black,
+        text = Black,
+        confirm = LightColorScheme.primary,
+        dismiss = Black,
+        shape = Transparent,
+        shadow = LightColorScheme.scrim,
+        message = LightColorScheme.error,
+    )
+
     val LocalColors = LocalColors(
         primaryButton,
         secondaryButton,
         link,
         textField,
         appBar,
-        drawer)
+        drawer,
+        dialog
+    )
 }
 
 object DarkColors {
@@ -308,7 +336,7 @@ object DarkColors {
         disabledBackground = Transparent,
         text = Black,
         disabledText = Grey,
-        shape = LightColorScheme.outline,
+        shape = DarkColorScheme.outline,
         disabledShape = Grey,
     )
     val link = CustomLinkColors(
@@ -326,24 +354,24 @@ object DarkColors {
         disabledContainerColor = Grey,
         errorContainerColor = Transparent,
         // Курсор
-        cursorColor = LightColorScheme.primary,
-        errorCursorColor = LightColorScheme.error,
+        cursorColor = DarkColorScheme.primary,
+        errorCursorColor = DarkColorScheme.error,
         // Бордер (индикатор)
-        focusedIndicatorColor = LightColorScheme.primary,
-        unfocusedIndicatorColor = LightColorScheme.outline,
+        focusedIndicatorColor = DarkColorScheme.primary,
+        unfocusedIndicatorColor = DarkColorScheme.outline,
         disabledIndicatorColor = Grey,
-        errorIndicatorColor= LightColorScheme.error,
+        errorIndicatorColor= DarkColorScheme.error,
         // Иконки
-        focusedLeadingIconColor = LightColorScheme.primary,
+        focusedLeadingIconColor = DarkColorScheme.primary,
         unfocusedLeadingIconColor = Grey,
         disabledLeadingIconColor = White,
         errorLeadingIconColor = Red,
-        focusedTrailingIconColor = LightColorScheme.primary,
+        focusedTrailingIconColor = DarkColorScheme.primary,
         unfocusedTrailingIconColor = Grey,
         disabledTrailingIconColor = White,
         errorTrailingIconColor = Red,
         // Лейблы
-        focusedLabelColor = LightColorScheme.primary,
+        focusedLabelColor = DarkColorScheme.primary,
         unfocusedLabelColor = Grey,
         disabledLabelColor = Grey,
         errorLabelColor = Red,
@@ -375,13 +403,27 @@ object DarkColors {
         selectedBadgeColor= ThemeColors.light.primary,
         unselectedBadgeColor= Black,
     )
+
+    val dialog = CustomDialogColors(
+        background = DarkColorScheme.surface,
+        title = Black,
+        text = Black,
+        confirm = DarkColorScheme.primary,
+        dismiss = Black,
+        shape = Transparent,
+        shadow = DarkColorScheme.scrim,
+        message = DarkColorScheme.error,
+    )
+
     val LocalColors = LocalColors(
         primaryButton,
         secondaryButton,
         link,
         textField,
         appBar,
-        drawer)
+        drawer,
+        dialog
+    )
 }
 
 val LocalExtendedColors = staticCompositionLocalOf<LocalColors> {

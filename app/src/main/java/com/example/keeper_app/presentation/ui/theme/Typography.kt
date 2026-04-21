@@ -49,7 +49,7 @@ val AppTypography = Typography(
     titleLarge = TextStyle(
         fontFamily = fontFamily,
         fontWeight = FontWeight.Normal,
-        fontSize = 18.sp,
+        fontSize = 20.sp,
     ),
     titleMedium = TextStyle(
         fontFamily = fontFamily,
