@@ -1,5 +1,6 @@
 package com.example.keeper_app.presentation.main.ui.screen
 
+import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -145,6 +146,7 @@ private fun MainContent(
             )
         }
         is UiDialog.Detail -> {
+            Log.i("MainContent", "Запускаем DetailServiceDialog")
             DetailServiceDialog(
                 service = dialog.service,
                 onDismiss = onDismissDialog,
@@ -358,7 +360,7 @@ private fun HomeContent(
                                         shape = MaterialTheme.shapes.medium,
                                         color = MaterialTheme.colorScheme.outline
                                     )
-                                    .clickable { onDetailClick }
+                                    .clickable { onDetailClick(service) }
                                     .heightIn(min = 50.dp)
                             )
                             Spacer(modifier = Modifier.height(dimensionResource(R.dimen.indent_medium)))

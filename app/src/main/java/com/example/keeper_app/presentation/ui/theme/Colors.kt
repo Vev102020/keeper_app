@@ -11,7 +11,8 @@ val Blue = Color(0xFF0095FF)
 val LightBlue = Color(0xFF38ACFF)
 val Grey = Color(0xFFBABECC)
 val LightGrey = Color(0xFFD7DAE5)
-val LightGreyUltra = Color(0xFFF0F0F0)
+val LightGreyMedium = Color(0xFFF0F0F0)
+val LightGreyLarge = Color(0xFFF9F9F9)
 val Red = Color(0xFFE8316C)
 val Transparent = Color(0x00000000)
 
@@ -130,6 +131,7 @@ data class LocalColors(
     val appBar: CustomAppBarColors,
     val drawer: CustomDrawerColors,
     val dialog: CustomDialogColors,
+    val totpDialog: CustomTotpDialogColors,
 )
 
 data class CustomAppBarColors(
@@ -162,6 +164,15 @@ data class CustomDialogColors(
     val shape: Color,
     val shadow: Color,
     val message: Color,
+)
+
+data class CustomTotpDialogColors(
+    val background: Color,
+    val totp: Color,
+    val icon: Color,
+    val iconBackground: Color,
+    val border: Color,
+    val timer: Color,
 )
 
 
@@ -283,7 +294,7 @@ object LightColors{
         titleContentColor = Black,
         navigationIconContentColor = Black,
         actionIconContentColor = Black,
-        shape = LightGreyUltra,
+        shape = LightGreyMedium,
     )
 
     val drawer = CustomDrawerColors(
@@ -311,6 +322,15 @@ object LightColors{
         message = LightColorScheme.error,
     )
 
+    val totpDialog = CustomTotpDialogColors(
+        background = Transparent,
+        totp = Black,
+        icon = Grey,
+        iconBackground = LightGreyLarge,
+        border = LightGrey,
+        timer = Grey,
+    )
+
     val LocalColors = LocalColors(
         primaryButton,
         secondaryButton,
@@ -318,7 +338,8 @@ object LightColors{
         textField,
         appBar,
         drawer,
-        dialog
+        dialog,
+        totpDialog
     )
 }
 
@@ -387,7 +408,7 @@ object DarkColors {
         titleContentColor = Black,
         navigationIconContentColor = Black,
         actionIconContentColor = Black,
-        shape = LightGreyUltra,
+        shape = LightGreyMedium,
     )
 
     val drawer = CustomDrawerColors(
@@ -415,6 +436,15 @@ object DarkColors {
         message = DarkColorScheme.error,
     )
 
+    val totpDialog = CustomTotpDialogColors(
+        background = Transparent,
+        totp = Black,
+        icon = Grey,
+        iconBackground = LightGreyLarge,
+        border = LightGrey,
+        timer = Grey,
+    )
+
     val LocalColors = LocalColors(
         primaryButton,
         secondaryButton,
@@ -422,7 +452,8 @@ object DarkColors {
         textField,
         appBar,
         drawer,
-        dialog
+        dialog,
+        totpDialog
     )
 }
 

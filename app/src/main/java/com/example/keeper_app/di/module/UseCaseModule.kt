@@ -5,6 +5,7 @@ import com.example.keeper_app.domain.usecases.auth.CheckAuthStatusUseCase
 import com.example.keeper_app.domain.usecases.auth.GetCurrentUserUseCase
 import com.example.keeper_app.domain.usecases.auth.LoginUseCase
 import com.example.keeper_app.domain.usecases.auth.RegisterUseCase
+import com.example.keeper_app.domain.usecases.service.GenerateTotpUseCase
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -36,5 +37,11 @@ object UseCaseModule {
     @Singleton
     fun provideGetCurrentUserUseCase(repository: AuthRepository) : GetCurrentUserUseCase {
         return GetCurrentUserUseCase(repository)
+    }
+
+    @Provides
+    @Singleton
+    fun provideGenerateTotpUseCase() : GenerateTotpUseCase {
+        return GenerateTotpUseCase()
     }
 }
