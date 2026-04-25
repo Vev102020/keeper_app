@@ -27,6 +27,4 @@ class SettingsActivityViewModel @Inject constructor(
     private val _uiState = MutableStateFlow<SettingsUiState>(SettingsUiState.Idle)
     val uiState : StateFlow<SettingsUiState> = _uiState.asStateFlow()
 
-
-
 }

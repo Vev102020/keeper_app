@@ -15,8 +15,6 @@ class TotpConverter {
 
     @TypeConverter
     fun fromJson(json: String?) : Totp?{
-        return json?.let {
-            gson.fromJson(it, object : TypeToken<Totp>() {}.type)
-        }
+        return json?.let { gson.fromJson(it, Totp::class.java) }
     }
 }

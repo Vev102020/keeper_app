@@ -2,6 +2,7 @@ package com.example.keeper_app.di.module
 
 import android.app.Application
 import android.content.Context
+import com.example.keeper_app.data.network.totp.CryptoManager
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -22,4 +23,8 @@ object AppModule {
     fun provideApplication(application: Application): Application {
         return application
     }
+
+    @Provides
+    @Singleton
+    fun provideCryptoManager(): CryptoManager = CryptoManager()
 }

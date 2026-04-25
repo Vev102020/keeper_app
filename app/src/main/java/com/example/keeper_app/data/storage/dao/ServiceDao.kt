@@ -29,4 +29,7 @@ interface ServiceDao {
     // Удалить все для пользователя
     @Query("DELETE FROM service_table WHERE userId = :userId")
     suspend fun deleteAllServicesForUser(userId: String)
+
+    @Query("SELECT * FROM service_table WHERE id = :serviceId")
+    suspend fun getServiceById(serviceId: Int): ServiceDb?
 }

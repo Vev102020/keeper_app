@@ -7,9 +7,13 @@ import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.asPaddingValues
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.statusBars
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.material3.MaterialTheme
@@ -76,7 +80,7 @@ fun AddServiceScreen(
 private fun AddServiceContent(
     viewModel: MainViewModel = hiltViewModel(),
     title: String = stringResource(R.string.service_title),
-    backTitle: String = stringResource(R.string.service_title_back),
+    backTitle: String = stringResource(R.string.back_btn),
     onBack: () -> Unit,
 ){
     val context = LocalContext.current
@@ -160,6 +164,12 @@ private fun FormContent(
 ){
     CustomStatusBar()
     Scaffold (
+        modifier = Modifier
+            .fillMaxSize()
+            .padding(
+                top = WindowInsets.statusBars.asPaddingValues()
+                    .calculateTopPadding()
+            ),
         topBar = {
             CustomAppBar(
                 text = title,

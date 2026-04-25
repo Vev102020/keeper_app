@@ -1,6 +1,5 @@
 package com.example.keeper_app.presentation.about
 
-import android.content.Context
 import android.os.Bundle
 import android.util.Log
 import androidx.activity.ComponentActivity
@@ -15,11 +14,13 @@ class AboutActivity : ComponentActivity() {
         const val TAG = "AboutActivity"
     }
 
-    val version : String = getAppVersion(this)
+    private lateinit var version : String
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        Log.i(TAG, "$TAG Запущена")
+
+        version = getAppVersion()
+
         setContent {
             AppTheme {
                 AboutScreen(
@@ -30,15 +31,16 @@ class AboutActivity : ComponentActivity() {
         }
     }
 
-    fun getAppVersion(context: Context): String {
+    fun getAppVersion(): String {
         return try {
-            val packageInfo = context.packageManager.getPackageInfo(
-                context.packageName,
+            val packageInfo = packageManager.getPackageInfo(
+                packageName,
                 0
             )
-            packageInfo.versionName ?: "Unknown"
+            packageInfo.versionName ?: "Не указана"
         } catch (e: Exception) {
-            "Unknown"
+            Log.e(TAG, "Ошибка получения версии", e)
+            "Не указана"
         }
     }
 }

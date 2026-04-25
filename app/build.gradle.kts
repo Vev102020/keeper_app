@@ -125,5 +125,7 @@ dependencies {
     implementation(libs.lifecycle.viewmodel.compose)
     //zxing
     implementation(libs.zxing.android.embedded)
+    //crypto
+    implementation(libs.security.crypto)
 }
 

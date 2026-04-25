@@ -9,7 +9,7 @@
     <string name="drawer_about">О приложении</string>
     <!-- AppBar -->
     <string name="appBar_descMenu">Открыть меню</string>
-
+    <string name="back_btn">Назад</string>
     <!-- Auth -->
     <string name="login_title">Вход</string>
     <string name="register_title">Регистрация</string>
@@ -35,7 +35,6 @@
 
     <!-- Service -->
     <string name="service_title">Создать сервис</string>
-    <string name="service_title_back">Назад</string>
     <string name="service_empty">Нет сохранённых сервисов</string>
     <string name="service_start_empty">Загрузка данных</string>
     <string name="service_error_load">Не удалось загрузить данные</string>
@@ -65,8 +64,6 @@
     <string name="detail_dialog_dismiss">Закрыть</string>
     <string name="detail_dialog_sec">сек</string>
 
-
-
     <!--Settings-->
     <string name="settings_title">Настройки аккаунта</string>
     <string name="settings_change_pin_bth">Сменить Пин-код</string>
@@ -75,6 +72,7 @@
     <string name="settings_del_bth">Удалить аккаунт</string>
 
     <!--About-->
+    <string name="about_title">О приложении</string>
     <string name="about_desc">Это приложение для управления сервисами и генерации TOTP-кодов на локальном хранилище.</string>
     <string name="about_version_title">Версия</string>
     <string name="about_developer_title">Разработчик</string>

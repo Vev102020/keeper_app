@@ -1,7 +1,9 @@
 package com.example.keeper_app.presentation.main.viewmodel
 
+import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.keeper_app.data.network.repo.TotpRepository
 import com.example.keeper_app.data.storage.entities.Totp
 import com.example.keeper_app.domain.usecases.service.GenerateTotpUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -21,31 +23,45 @@ sealed interface TotpUiState {
 }
 
 @HiltViewModel
-class TotpViewModel @Inject constructor(
-    private val generateTotpUseCase: GenerateTotpUseCase
+class DetailServiceViewModel @Inject constructor(
+    private val generateTotpUseCase: GenerateTotpUseCase,
+    private val totpRepository: TotpRepository
 ) : ViewModel() {
+    private companion object{
+        const val TAG = "DetailServiceViewModel"
+    }
 
     private val _uiState = MutableStateFlow<TotpUiState>(TotpUiState.Idle)
     val uiState: StateFlow<TotpUiState> = _uiState.asStateFlow()
 
     private var timerJob: Job? = null
 
-    fun startTotpGeneration(totp: Totp){
+    //Расшифровака кода
+    suspend fun decryptTotp(totp: Totp): Totp? = try {
+        totpRepository.decryptTotp(totp)
+    } catch (e: Exception) {
+        Log.e(TAG, "Расшифровка не удалась", e)
+        null
+    }
+
+    fun startTotpGeneration(decryptedTotp: Totp){
         timerJob?.cancel()
         timerJob = viewModelScope.launch {
             while (isActive){
                 try {
-                    val code = generateTotpUseCase.generateTotp(totp)
+                    val code = generateTotpUseCase.generateTotp(decryptedTotp)
+                    Log.d(TAG, "Сгенерирован код: $code")
                     val currentTime = System.currentTimeMillis() / 1000
-                    val timerValue = (totp.period - (currentTime % totp.period)).toInt()
+                    val timerValue = (decryptedTotp.period - (currentTime % decryptedTotp.period)).toInt()
 
-
+                    Log.d(TAG, "Устанавливаем Success: code=$code, timer=$timerValue")
                     _uiState.value = TotpUiState.Success(
                         code = code,
                         timerValue = timerValue
                     )
                     delay(1000)
                 }catch (e: Exception){
+                    Log.e(TAG, "Ошибка генерации", e)
                    _uiState.value = TotpUiState.Error("Ошибка: ${e.message}")
                 }
             }

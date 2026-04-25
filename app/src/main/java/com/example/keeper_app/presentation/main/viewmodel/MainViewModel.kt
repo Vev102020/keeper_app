@@ -1,10 +1,10 @@
 package com.example.keeper_app.presentation.main.viewmodel
 
 import android.util.Log
-import androidx.compose.runtime.MutableState
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.keeper_app.data.network.repo.AuthRepository
+import com.example.keeper_app.data.network.repo.TotpRepository
 import com.example.keeper_app.data.network.session.SessionManager
 import com.example.keeper_app.data.storage.dao.ServiceDao
 import com.example.keeper_app.data.storage.entities.ServiceDb
@@ -49,7 +49,8 @@ sealed class NavigationEvent{
 class MainViewModel @Inject constructor(
     private val serviceDao: ServiceDao,
     private val sessionManager: SessionManager,
-    private val authRepository: AuthRepository
+    private val authRepository: AuthRepository,
+    private val totpRepository: TotpRepository
 
 ) : ViewModel() {
     private companion object {
@@ -177,16 +178,7 @@ class MainViewModel @Inject constructor(
                     return@launch
                 }
 
-                val totp = Totp(secretKey = secretKey)
-                val service = ServiceDb(
-                    id = 0,
-                    userId = userId,
-                    name = name,
-                    totp = totp
-                )
-
-                serviceDao.insertService(service)
-
+                totpRepository.saveServiceWithTotp(name, secretKey, userId)
                 _addServiceState.update {
                     it.copy(isLoading = false, success = true)
                 }
